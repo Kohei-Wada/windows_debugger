@@ -7,15 +7,11 @@
 #include "handler.h"
 
 
-
-
 int      debugger_active = 1;
 DWORD    pid;
 HANDLE   h_process;
 HANDLE   h_thread;
 CONTEXT  context;
-
-
 
 
 int _log(char *fmt, ...)
@@ -38,6 +34,7 @@ int log = 1;
 int _err(char *msg)
 {
 int err = 1;
+
     if(err){
         fprintf(stderr, "error: %s erno = %ld\n", msg, GetLastError());
     }
@@ -71,9 +68,7 @@ TOKEN_PRIVILEGES  token_state;
         CloseHandle(h_token);
         return 1;
     }
-
     return 0;
-
 }
 
 
@@ -151,9 +146,10 @@ int main(int argc, char **argv)
 {
 
     if(argc < 2){
-        fprintf(stderr, "Usage: [pid]");
+        fprintf(stderr, "Usage: <pid> <dll> <func>\n");
         return 1;
     }
+
 
 
     pid = atoi(argv[1]);
@@ -166,12 +162,14 @@ int main(int argc, char **argv)
     }
 
 
-    LPCSTR func = "printf";
-    LPCSTR dll = "Msvcrt.dll";
-    FARPROC bp_addr = func_resolver(dll, func);
-    _log("[L O G] func-addr = %p\n", bp_addr);
-    bp_set(bp_addr);
+    if(argc == 4){
+        LPCSTR dll = argv[2];
+        LPCSTR func = argv[3];
+        FARPROC bp_addr = func_resolver(dll, func);
+        _log("[L O G] %s-addr = 0x%p\n", argv[3], bp_addr);
+        bp_set(bp_addr);
 
+    }
 
 
     DebugActiveProcess(pid);

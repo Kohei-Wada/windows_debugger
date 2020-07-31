@@ -21,8 +21,6 @@ int restore_bp_index = -1;
 
 
 
-
-
 int get_index_of_bp(LPVOID addr)
 {
     for(int index = 0; index < num_of_bps; ++index){
@@ -46,7 +44,6 @@ void dump_context(CONTEXT *context){
     printf(" [rax] %I64d\n", context -> Rax);
     printf("-----------------------------------------\n");
 }
-
 
 
 
@@ -120,6 +117,7 @@ int index_of_bp;
 
         context.Rip -= 1;
         context.EFlags = 256;
+
         if(SetThreadContext(h_thread, &context) == 0){
             _err("SetThreadContext");
         }
@@ -127,7 +125,7 @@ int index_of_bp;
     }
     else{
         if(first_break_hit){
-            _log("    unknow breakpoint detected\n");
+            _log("    unknown breakpoint detected\n");
         }
 
         else{
@@ -135,6 +133,7 @@ int index_of_bp;
             first_break_hit = 1;
         }
     }
+    
     return DBG_CONTINUE;
 }
 
