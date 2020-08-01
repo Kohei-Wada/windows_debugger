@@ -43,7 +43,6 @@ int err = 1;
 
 
 
-
 int get_debug_privileges()
 {
 HANDLE            h_token;
@@ -93,7 +92,6 @@ DWORD         continue_status = DBG_CONTINUE;
 
     //printf("ExceptionCode = %ld  Thread ID = %ld\n", dbg.dwDebugEventCode, dbg.dwThreadId);
     switch(dbg.dwDebugEventCode){
-
         case EXCEPTION_DEBUG_EVENT:
             continue_status = event_handler_exception(&dbg);
             break;
@@ -147,9 +145,9 @@ int main(int argc, char **argv)
 
     if(argc < 2){
         fprintf(stderr, "Usage: <pid> <dll> <func>\n");
+        fprintf(stderr, "   ex: ./debug 1234 msvcrt.dll printf\n");
         return 1;
     }
-
 
 
     pid = atoi(argv[1]);
@@ -162,15 +160,16 @@ int main(int argc, char **argv)
     }
 
 
-    if(argc == 4){
+    if(argc > 3){
         LPCSTR dll = argv[2];
         LPCSTR func = argv[3];
-        FARPROC bp_addr = func_resolver(dll, func);
-        _log("[L O G] %s-addr = 0x%p\n", argv[3], bp_addr);
-        bp_set(bp_addr);
+        FARPROC bp_addr;
 
+        if((bp_addr = func_resolver(dll, func)) != NULL){
+            _log("[L O G] %s-addr = 0x%p\n", argv[3], bp_addr);
+            bp_set(bp_addr);
+        }
     }
-
 
     DebugActiveProcess(pid);
     _log("[L O G] attach to pid: %ld\n", pid);

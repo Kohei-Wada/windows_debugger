@@ -34,14 +34,14 @@ int get_index_of_bp(LPVOID addr)
 
 void dump_context(CONTEXT *context){
     printf("-----------------context-----------------\n");
-    printf(" [rip] %I64d\n", context -> Rip);
-    printf(" [rcx] %I64d\n", context -> Rcx);
-    printf(" [rdx] %I64d\n", context -> Rdx);
-    printf(" [r 8] %I64d\n", context -> R8);
-    printf(" [r 9] %I64d\n", context -> R9);
-    printf(" [rdi] %I64d\n", context -> Rdi);
-    printf(" [rsi] %I64d\n", context -> Rsi);
-    printf(" [rax] %I64d\n", context -> Rax);
+    printf(" [rip] 0x%I64x\n", context -> Rip);
+    printf(" [rcx] 0x%I64x\n", context -> Rcx);
+    printf(" [rdx] 0x%I64x\n", context -> Rdx);
+    printf(" [r 8] 0x%I64x\n", context -> R8);
+    printf(" [r 9] 0x%I64x\n", context -> R9);
+    printf(" [rdi] 0x%I64x\n", context -> Rdi);
+    printf(" [rsi] 0x%I64x\n", context -> Rsi);
+    printf(" [rax] 0x%I64x\n", context -> Rax);
     printf("-----------------------------------------\n");
 }
 
@@ -133,7 +133,7 @@ int index_of_bp;
             first_break_hit = 1;
         }
     }
-    
+
     return DBG_CONTINUE;
 }
 
@@ -267,8 +267,12 @@ OUTPUT_DEBUG_STRING_INFO  info = dbg->u.DebugString;
 WCHAR msg[info.nDebugStringLength];
 
     ReadProcessMemory(h_process, info.lpDebugStringData, msg, info.nDebugStringLength, NULL);
+
     _log("[EVENT] Output string.\n");
-    //printf("Output String: %hs\n", msg);
+
+    if(info.fUnicode)
+        printf("Output String: %hs\n", msg);
+
     return DBG_CONTINUE;
 }
 
