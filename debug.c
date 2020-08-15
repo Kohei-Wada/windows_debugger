@@ -140,31 +140,43 @@ DWORD         continue_status = DBG_CONTINUE;
 
 
 
-int get_command()
+void get_command()
 {
 char line[50];
-    fgets(line, sizeof(line), stdin);
 
-    if(strcmp(line, "quit\n") == 0|| strcmp(line, "q\n") == 0)
-        exit(0);
+    while(1){
+        printf(">");
+        fgets(line, sizeof(line), stdin);
 
-    if(strcmp(line, "cont\n") == 0 || strcmp(line, "c\n") == 0)
-        return 0;
+        if(strcmp(line, "quit\n") == 0 || strcmp(line, "q\n") == 0)
+            exit(0);
 
+        if(strcmp(line, "cont\n") == 0 || strcmp(line, "c\n") == 0)
+            break;
+            
+        if(strcmp(line, "break\n") == 0 || strcmp(line, "b\n") == 0){
+            LPCSTR dll = "msvcrt.dll";
+            LPCSTR func = "printf";
+            FARPROC bp_addr;
+
+            if((bp_addr = func_resolver(dll, func)) != NULL){
+                _log("[L O G] %s-addr = 0x%p\n", func, bp_addr);
+                bp_set(bp_addr);
+            }
+        }
+    }
 }
 
 
 
 int main(int argc, char **argv)
 {
-int ret = 0;
 
     if(argc < 2){
         fprintf(stderr, "Usage: <pid> <dll> <func>\n");
         fprintf(stderr, "   ex: ./debug 1234 msvcrt.dll printf\n");
         return 1;
     }
-
 
     pid = atoi(argv[1]);
 
@@ -175,26 +187,10 @@ int ret = 0;
         return 1;
     }
 
+    DebugActiveProcess(pid);
     _log("[L O G] attach to pid: %ld\n", pid);
 
-
     get_command();
-
-/*
-    if(argc > 3){
-        LPCSTR dll = argv[2];
-        LPCSTR func = argv[3];
-        FARPROC bp_addr;
-
-        if((bp_addr = func_resolver(dll, func)) != NULL){
-            _log("[L O G] %s-addr = 0x%p\n", argv[3], bp_addr);
-            bp_set(bp_addr);
-        }
-    }
-
-
-*/
-    DebugActiveProcess(pid);
 
     while(debugger_active){
         if(get_debug_event() == 1)
