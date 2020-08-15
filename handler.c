@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "breakpoint.h"
-#define MAX_SIZE 256
+#define MAX_SIZE 10
 
 
 extern int _log(char *fmt, ...);
@@ -127,7 +127,6 @@ int index_of_bp;
         if(first_break_hit){
             _log("    unknown breakpoint detected\n");
         }
-
         else{
             _log("    First windows breakpoint.\n");
             first_break_hit = 1;

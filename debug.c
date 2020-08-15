@@ -140,8 +140,24 @@ DWORD         continue_status = DBG_CONTINUE;
 
 
 
+int get_command()
+{
+char line[50];
+    fgets(line, sizeof(line), stdin);
+
+    if(strcmp(line, "quit\n") == 0|| strcmp(line, "q\n") == 0)
+        exit(0);
+
+    if(strcmp(line, "cont\n") == 0 || strcmp(line, "c\n") == 0)
+        return 0;
+
+}
+
+
+
 int main(int argc, char **argv)
 {
+int ret = 0;
 
     if(argc < 2){
         fprintf(stderr, "Usage: <pid> <dll> <func>\n");
@@ -159,7 +175,12 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    _log("[L O G] attach to pid: %ld\n", pid);
 
+
+    get_command();
+
+/*
     if(argc > 3){
         LPCSTR dll = argv[2];
         LPCSTR func = argv[3];
@@ -171,8 +192,9 @@ int main(int argc, char **argv)
         }
     }
 
+
+*/
     DebugActiveProcess(pid);
-    _log("[L O G] attach to pid: %ld\n", pid);
 
     while(debugger_active){
         if(get_debug_event() == 1)
